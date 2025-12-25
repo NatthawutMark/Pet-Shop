@@ -6,12 +6,11 @@ const nextConfig: NextConfig = {
     return[
         {
             source: '/',
-            destination: '/home',
+            destination: '/users/home',
             permanent: false,
         },
     ]
   },
-  
 //   basePath: "/home",
 };
 
