@@ -22,6 +22,8 @@
     "paths": {
       "@/*": ["./*"],
       "@/Meterials": ["./components/ui/meterials.tsx"],
+      "@/layouts": ["./components/layout/*"],
+      "@/generated/prisma": ["./generated/prisma"]
     }
   },
   "include": [
