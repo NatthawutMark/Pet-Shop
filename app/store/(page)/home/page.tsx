@@ -2,10 +2,13 @@
 import { SidebarProvider, Sidebars } from "@/components/layout/SidebarCustom";
 import { Divide, Menu } from "lucide-react";
 import Image from "next/image";
-import React from "react";
-
+import { useState, useEffect } from "react";
+import { Button, Input } from "@/Meterials";
 // ในคอมโพเนนต์อื่น
 import { useSidebar } from '@/components/layout/SidebarCustom'; // ต้อง export ด้วย
+import { count } from "console";
+import { MastStatus } from '@/Services'
+
 
 const MenuButton = () => {
     const { toggle, isOpen } = useSidebar();
@@ -21,7 +24,22 @@ const MenuButton = () => {
 };
 
 
+
 function Home() {
+    const [data, setData] = useState(null);
+    const [idMaster, setIdMaster] = useState('');
+
+    function getMasterOnClick() {
+        if (!idMaster) return '';
+
+        MastStatus.getMastStatusById(idMaster).then((res) => {
+            if (res && res.status === true) {
+                console.log('Mast Status:', res.results);
+                setData(res.results);
+            }
+        })
+    }
+
     return (
 
         <>
@@ -37,6 +55,9 @@ function Home() {
                         <h1 className="text-4xl font-bold text-gray-900 dark:text-white sm:text-5xl">
                             เข้าใจแล้วววววววว
                         </h1>
+                        <Input value={idMaster} onChange={(e) => setIdMaster(e.target.value)} placeholder="Please input ID"></Input>
+                        <Button onClick={getMasterOnClick} >Click Count</Button>
+                        <p>{data?.NAME || ''}</p>
                     </main>
                 </ div>
             </div >

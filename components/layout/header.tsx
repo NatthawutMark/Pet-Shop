@@ -1,8 +1,11 @@
 'use client'
 import { ShoppingCart, User, Search } from 'lucide-react'
 import { Button } from "@/Meterials"
+import { useRouter } from 'next/navigation';
 
-export default function Header() {
+function Header() {
+    const router = useRouter();
+
     return (
         <header className="w-full bg-pink-100 border-b">
             <div className="mx-auto max-w-7xl px-4">
@@ -37,10 +40,10 @@ export default function Header() {
                             <ShoppingCart size={22} />
                         </button>
 
-                        <button className="flex items-center gap-2 rounded-full border px-3 py-1 hover:bg-pink-200">
+                        <Button onClick={() => { router.push('/auth') }} className="flex items-center gap-2 rounded-full border px-3 py-1 hover:bg-pink-200">
                             <User size={18} />
                             <span className="text-sm">เข้าสู่ระบบ</span>
-                        </button>
+                        </Button>
                     </div>
 
                 </div>
@@ -48,3 +51,5 @@ export default function Header() {
         </header>
     )
 }
+
+export default Header;

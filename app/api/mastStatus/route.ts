@@ -1,17 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { errorResponse, successResponse } from '@/lib/utils'
+import { response } from '@/lib/utils'
+
 import prisma from '@/lib/prisma'
+import { HttpStatusCode } from 'axios';
 
 export async function GET(request: NextRequest) {
     try {
-        const allStatus = await prisma.mAST_STATUS.findMany({});
+        const searchPrams = new URL(request.url).searchParams;
+        const id = searchPrams.get('id')?.toString();
 
-        return successResponse({
-            data: allStatus,
-        }, 200);
+        const allStatus = await prisma.mAST_STATUS.findFirst({
+            where: {
+                ID: parseInt(id!) || undefined
+            }
+        });
+
+        // return Response.success(allStatus, 'Fetched users successfully')
+        return response({
+            results: allStatus,
+            status: true
+        }, HttpStatusCode.Ok)
 
     } catch (error) {
         console.error('Error fetching users:', error)
-        return errorResponse('Failed to fetch users Fuck')
+        return response('Failed to fetch users')
     }
 }
