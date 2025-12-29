@@ -4,10 +4,8 @@ import "dotenv/config";
 import { defineConfig } from "prisma/config";
 import { env } from 'process';
 
-function getConnectionString() {
-    console.log(`mysql://${env.DB_USER}:${env.DB_PASSWORD}@${env.DB_HOST}:${env.DB_PORT}/${env.DB_NAME}`);
-    
-    return `mysql://${env.DB_USER}:${env.DB_PASSWORD}@${env.DB_HOST}:${env.DB_PORT}/${env.DB_NAME}?ssl-mode=VERIFY_CA&ssl-ca=~/Downloads/isrgrootx1.pem`;
+function getConnectionString() {    
+    return `mysql://${env.DB_USER}:${env.DB_PASSWORD}@${env.DB_HOST}:${env.DB_PORT}/${env.DB_NAME}?sslaccept=strict&&sslca=${process.cwd()}${env.PATH_CA}`;
 }
 
 export default defineConfig({

@@ -189,7 +189,7 @@ function tabsRegister(formRegister: UseFormReturn<z.infer<typeof RegisterSchema>
                 });
 
                 User.createUserCus(value).then((resApi) => {
-                    Swal.close();
+
                     if (resApi && resApi.status == true) {
                         Swal.fire({
                             title: 'สำเร็จ',
@@ -204,15 +204,17 @@ function tabsRegister(formRegister: UseFormReturn<z.infer<typeof RegisterSchema>
                         return;
                     }
                     else {
-                        Swal.fire({
-                            title: 'เกิดข้อผิดพลาด',
-                            text: `${resApi.results}`,
-                            timer: 3000,
-                            icon: 'error',
-                            showConfirmButton: false
-                        })
-                        return;
                     }
+                }, (err) => {
+                    Swal.close();
+                    Swal.fire({
+                        title: 'เกิดข้อผิดพลาด',
+                        text: `${err.results}`,
+                        timer: 3000,
+                        icon: 'error',
+                        showConfirmButton: false
+                    })
+                    return;
                 });
             }
 

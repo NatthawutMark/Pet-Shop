@@ -51,11 +51,11 @@ export async function POST(request: NextRequest) {
         });
 
         // if (createData.status == true) {
-            return response({
-                results: { ...createData },
-                message: 'บันทึกข้อมูลสำเร็จ',
-                status: true
-            }, HttpStatusCode.Ok)
+        return response({
+            results: { ...createData },
+            message: 'บันทึกข้อมูลสำเร็จ',
+            status: true
+        }, HttpStatusCode.Ok)
         // }
         // else {
         //     return response({
@@ -70,6 +70,9 @@ export async function POST(request: NextRequest) {
     } catch (error) {
 
         console.error('Error fetching users:', error)
-        return response('Failed to fetch users')
+        return response({
+            results: `Failed to fetch users : ${error}`,
+            status: false
+        }, 500)
     }
 }
