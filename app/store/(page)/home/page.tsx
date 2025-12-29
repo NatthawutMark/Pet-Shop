@@ -9,7 +9,6 @@ import { useSidebar } from '@/components/layout/SidebarCustom'; // ต้อง 
 import { count } from "console";
 import { MastStatus } from '@/Services'
 
-
 const MenuButton = () => {
     const { toggle, isOpen } = useSidebar();
 
@@ -24,10 +23,16 @@ const MenuButton = () => {
 };
 
 
-
 function Home() {
     const [data, setData] = useState(null);
     const [idMaster, setIdMaster] = useState('');
+
+
+    useEffect(() => {
+        // โค้ดส่วนนี้จะรันบน Browser เท่านั้น
+        const curUser = localStorage.getItem('currentUser');
+        console.log('curUser Home:', JSON.parse(curUser));
+    }, []);
 
     function getMasterOnClick() {
         if (!idMaster) return '';
@@ -39,6 +44,7 @@ function Home() {
             }
         })
     }
+
 
     return (
 
@@ -53,7 +59,7 @@ function Home() {
                 < div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black" >
                     <main className="flex min-h-screen w-full min-w-3xl max-w-dvw flex-col items-center py-4 px-4 bg-white dark:bg-black sm:items-start">
                         <h1 className="text-4xl font-bold text-gray-900 dark:text-white sm:text-5xl">
-                            เข้าใจแล้วววววววว
+                            เข้าใจแล้วล่ะ
                         </h1>
                         <Input value={idMaster} onChange={(e) => setIdMaster(e.target.value)} placeholder="Please input ID"></Input>
                         <Button onClick={getMasterOnClick} >Click Count</Button>

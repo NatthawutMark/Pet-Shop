@@ -10,8 +10,6 @@ const api = axios.create({
 class MastStatus {
     static async getMastStatusById(id: string) {
         try {
-            // const res = await api.get(`/mastStatus?id=${id}`);
-            // return res;
             return await api.get(`/mastStatus?id=${id}`).then((response) => {
                 return response.data;
             });
@@ -22,9 +20,29 @@ class MastStatus {
     };
 }
 
-class MastItem {
+class User {
 
+    static async login(dataForm: any) {
+        try {
+            return await api.post<any>(`/user/login`, dataForm).then((results) => {
+                return results.data;
+            })
+        } catch (error) {
+            console.log('error', error);
+            throw error;
+        }
+    }
 
+    static async createUserCus(dataForm: any) {
+        try {
+            return await api.post<any>(`/user/register`, dataForm).then((results) => {
+                return results.data;
+            })
+        } catch (error) {
+            console.log('error', error);
+            throw error;
+        }
+    }
 }
 
-export { MastStatus, MastItem };
+export { MastStatus, User };

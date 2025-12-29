@@ -7,7 +7,6 @@ import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 import { SidebarProvider, Sidebars, useSidebar } from "@/components/layout/SidebarCustom";
 
-
 const geistSans = Geist({
     variable: "--font-geist-sans",
     subsets: ["latin"],

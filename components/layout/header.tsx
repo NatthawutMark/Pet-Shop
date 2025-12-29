@@ -39,11 +39,11 @@ function Header() {
                         <button className="relative rounded-full p-2 hover:bg-pink-200">
                             <ShoppingCart size={22} />
                         </button>
-
                         <Button onClick={() => { router.push('/auth') }} className="flex items-center gap-2 rounded-full border px-3 py-1 hover:bg-pink-200">
                             <User size={18} />
-                            <span className="text-sm">เข้าสู่ระบบ</span>
+                            เข้าสู่ระบบ
                         </Button>
+
                     </div>
 
                 </div>

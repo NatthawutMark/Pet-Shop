@@ -22,7 +22,7 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
 
     return (
         <html lang="en">
-            <body className='bg-red-300 flex flex-col'>
+            <body className='bg-black flex flex-col'>
                 <div className="min-h-screen ">
                     <div className="flex justify-center ">
                         {children}

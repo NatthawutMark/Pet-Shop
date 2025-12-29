@@ -9,9 +9,13 @@ const nextConfig: NextConfig = {
             destination: '/store/home',
             permanent: false,
         },
+        {
+            source: '/store',
+            destination: '/store/home',
+            permanent: false,
+        },
     ]
   },
-//   basePath: "/home",
 };
 
 export default nextConfig;

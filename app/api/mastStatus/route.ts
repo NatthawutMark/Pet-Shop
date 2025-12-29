@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
         const searchPrams = new URL(request.url).searchParams;
         const id = searchPrams.get('id')?.toString();
 
-        const allStatus = await prisma.mAST_STATUS.findFirst({
+        const allStatus = await prisma.mAST_STATUS.findUnique({
             where: {
                 ID: parseInt(id!) || undefined
             }

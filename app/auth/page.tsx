@@ -1,21 +1,20 @@
 'use client'
 
 import { useState, useEffect } from "react";
-import { Card, CardHeader, CardContent, CardFooter, CardTitle, Field, Tabs, TabsList, TabsTrigger, TabsContent, CardDescription, Label, Input, Button, Textarea, Form, FormField, FormItem, FormLabel, FormControl, FormMessage, Checkbox } from '@/Meterials'
-import { FormProvider, useForm } from "react-hook-form";
+import { Card, CardHeader, CardContent, CardFooter, CardTitle, Field, Tabs, TabsList, TabsTrigger, TabsContent, Input, Button, Textarea, FormField, FormItem, FormLabel, FormControl, FormMessage, Checkbox } from '@/Meterials'
+import { FormProvider, useForm, UseFormReturn } from "react-hook-form";
 import * as z from "zod";
 import { Mail, Lock, EyeOff, Eye, CircleUser } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod"
 import Swal from 'sweetalert2'
 import { useRouter } from "next/navigation";
-
+import { User } from "@/Services/api";
 //#region SchemaInput
 const LoginSchema = z.object({
     username: z.string().min(1, "กรุณากรอก Username").optional(),
-    password: z.string().min(6, "รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร"),
+    password: z.string().min(6, "รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร").optional(),
 
 });
-
 const RegisterSchema = z.object({
     // email: z.string().min(1, "กรุณากรอกอีเมล").email("รูปแบบอีเมลไม่ถูกต้อง"),
     firstName: z.string().min(1, 'กรุณากรอกชื่อ'),
@@ -29,24 +28,14 @@ const RegisterSchema = z.object({
 });
 //#endregion
 
-function tabsLogin() {
+function tabsLogin(formLogin: UseFormReturn<z.infer<typeof LoginSchema>>) {
     const router = useRouter();
     const [showPassword, setShowPassword] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
 
-    //#region Use Schema เท่าที่จำเป็น
-    const form = useForm<z.infer<typeof LoginSchema>>({
-        resolver: zodResolver(LoginSchema),
-        defaultValues: {
-            username: "",
-            password: "",
-        },
-    })
-    //#endregion
 
     async function SubmitLogin(values: z.infer<typeof LoginSchema>) {
         setIsLoading(true)
-        
         Swal.fire({
             title: 'กำลังโหลด...',
             showConfirmButton: false,
@@ -57,32 +46,44 @@ function tabsLogin() {
             }
         });
 
-        await new Promise(resolve => setTimeout(resolve, 1500))
+        await User.login(values).then((res) => {
+            Swal.close();
+            if (res && res.status == true) {
 
-        Swal.close();
-
-        await Swal.fire({
-            title: 'เข้าสู่ระบบสำเร็จ!',
-            text: `ยินดีต้อนรับ, ${values.username}`,
-            icon: 'success',
-            showConfirmButton: false,
-            timer: 2000,
-        }).then(() => {
-            router.push('/store/home'); // เปลี่ยนเส้นทางไปยังแดชบอร์ดหลังจากปิดการแจ้งเตือน
+                localStorage.setItem('currentUser', JSON.stringify(res.results));
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'เข้าสู่ระบบสำเร็จ',
+                    showConfirmButton: true,
+                    timer: 2000
+                }).then((resPage) => {
+                    router.push('/store/home');
+                });
+            }
+            else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ERROR',
+                    text: res.results,
+                    showConfirmButton: true,
+                    timer: 2000
+                })
+            }
         })
-        
+
         setIsLoading(false)
     }
     return (
-        <FormProvider {...form}>
-            <form onSubmit={form.handleSubmit(SubmitLogin)}>
+        <FormProvider {...formLogin}>
+            <form onSubmit={formLogin.handleSubmit(SubmitLogin)}>
                 <Card>
                     <CardHeader>
                         <CardTitle>เข้าสู่ระบบ</CardTitle>
                     </CardHeader>
                     <CardContent className="grid gap-6">
                         <FormField
-                            control={form.control}
+                            control={formLogin.control}
                             name="username"
                             render={({ field }) => (
                                 <FormItem>
@@ -103,7 +104,7 @@ function tabsLogin() {
                         />
 
                         <FormField
-                            control={form.control}
+                            control={formLogin.control}
                             name="password"
                             render={({ field }) => (
                                 <FormItem>
@@ -139,8 +140,9 @@ function tabsLogin() {
                         {/* <Button type="submit" variant="btnGreen" >สมัครสมาชิก</Button> */}
                         <Button
                             type="submit"
-                            onClick={form.handleSubmit(SubmitLogin)}
-                            className="w-full bg-indigo-600 hover:bg-indigo-700"
+                            onClick={formLogin.handleSubmit(SubmitLogin)}
+                            variant="btnGreen"
+                            className="w-full"
                             disabled={isLoading}
                         >
                             {isLoading ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
@@ -152,38 +154,74 @@ function tabsLogin() {
     )
 }
 
-
-function tabsRegister() {
+function tabsRegister(formRegister: UseFormReturn<z.infer<typeof RegisterSchema>>) {
+    const router = useRouter();
     const [showPassword, setShowPassword] = useState(false)
-
-    const form = useForm<z.infer<typeof RegisterSchema>>({
-        resolver: zodResolver(RegisterSchema),
-        defaultValues: {
-            firstName: "",
-            lastName: "",
-            address: "",
-            tel: "",
-            username: "",
-            password: "",
-            confirmPassword: ""
-        }
-    })
 
     async function submitRegister(value: z.infer<typeof RegisterSchema>) {
         const { firstName, lastName, address, tel, username, password, confirmPassword } = value;
 
-        if (password != confirmPassword)
+        if (password != confirmPassword) {
             Swal.fire({
                 title: 'เกิดข้อผิดพลาด',
                 icon: "error",
                 text: 'รหัสไม่ตรง กรุณาตรวจสอบความถูกต้อง',
                 confirmButtonText: 'ตกลง'
             });
+            return;
+        }
+
+        Swal.fire({
+            icon: 'question',
+            title: 'ตรวจสอบความถูกต้อง',
+            text: `กรุณากดตรจสอบความถูกต้องการกด "ยืนยัน"`,
+            confirmButtonText: 'ยืนยัน',
+            showCancelButton: true,
+            reverseButtons: true
+        }).then((res) => {
+            if (res.isConfirmed) {
+                Swal.fire({
+                    title: `กำลังโหลด...`,
+                    text: `กำลังบันทึกข้อมูล...`,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                User.createUserCus(value).then((resApi) => {
+                    Swal.close();
+                    if (resApi && resApi.status == true) {
+                        Swal.fire({
+                            title: 'สำเร็จ',
+                            text: `บันทึกข้อมูลสำเร็จ`,
+                            timer: 3000,
+                            icon: 'success',
+                            showConfirmButton: false
+                        }).then((repage) => {
+                            router.refresh();
+                        });
+                        formRegister.reset();
+                        return;
+                    }
+                    else {
+                        Swal.fire({
+                            title: 'เกิดข้อผิดพลาด',
+                            text: `${resApi.results}`,
+                            timer: 3000,
+                            icon: 'error',
+                            showConfirmButton: false
+                        })
+                        return;
+                    }
+                });
+            }
+
+        });
     }
 
     return (
-        <FormProvider {...form}>
-            <form onSubmit={form.handleSubmit(submitRegister)}>
+        <FormProvider {...formRegister}>
+            <form onSubmit={formRegister.handleSubmit(submitRegister)}>
                 <Card>
                     <CardHeader>
                         <CardTitle>สมัครสมาชิก</CardTitle>
@@ -191,7 +229,7 @@ function tabsRegister() {
                     <CardContent className="grid gap-6">
                         <div className="grid grid-cols-2 gap-3">
                             <FormField
-                                control={form.control}
+                                control={formRegister.control}
                                 name="firstName"
                                 render={({ field }) => (
                                     <FormItem>
@@ -211,7 +249,7 @@ function tabsRegister() {
                             />
 
                             <FormField
-                                control={form.control}
+                                control={formRegister.control}
                                 name="lastName"
                                 render={({ field }) => (
                                     <FormItem>
@@ -233,7 +271,7 @@ function tabsRegister() {
 
                         <div className="grid gap-3">
                             <FormField
-                                control={form.control}
+                                control={formRegister.control}
                                 name="address"
                                 render={({ field }) => (
                                     <FormItem>
@@ -253,7 +291,7 @@ function tabsRegister() {
                         </div>
                         <div className="grid gap-3">
                             <FormField
-                                control={form.control}
+                                control={formRegister.control}
                                 name="tel"
                                 render={({ field }) => (
                                     <FormItem>
@@ -275,7 +313,7 @@ function tabsRegister() {
                         </div>
                         <div className="grid gap-3">
                             <FormField
-                                control={form.control}
+                                control={formRegister.control}
                                 name="username"
                                 render={({ field }) => (
                                     <FormItem>
@@ -297,7 +335,7 @@ function tabsRegister() {
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <FormField
-                                control={form.control}
+                                control={formRegister.control}
                                 name="password"
                                 render={({ field }) => (
                                     <FormItem>
@@ -317,7 +355,7 @@ function tabsRegister() {
                                 )}
                             />
                             <FormField
-                                control={form.control}
+                                control={formRegister.control}
                                 name="confirmPassword"
                                 render={({ field }) => (
                                     <FormItem>
@@ -353,7 +391,7 @@ function tabsRegister() {
                             className="w-full"
                             variant="btnGreen"
                             type="submit"
-                            onClick={form.handleSubmit(submitRegister)}
+                            onClick={formRegister.handleSubmit(submitRegister)}
                         >สมัครสมาชิก</Button>
                     </CardFooter>
                 </Card>
@@ -363,24 +401,56 @@ function tabsRegister() {
 }
 
 export function loginPage() {
+
+    //#region Login Schema
+    const formLogin = useForm<z.infer<typeof LoginSchema>>({
+        resolver: zodResolver(LoginSchema),
+        defaultValues: {
+            username: "",
+            password: "",
+        },
+    })
+    //#endregion
+
+    //#region Register Schema
+    const formRegister = useForm<z.infer<typeof RegisterSchema>>({
+        resolver: zodResolver(RegisterSchema),
+        defaultValues: {
+            firstName: "",
+            lastName: "",
+            address: "",
+            tel: "",
+            username: "",
+            password: "",
+            confirmPassword: ""
+        }
+    })
+    //#endregion
+
+    const handleTabChange = (value: string) => {
+        console.log('value change', value);
+
+        if (value == 'login') { formRegister.reset() }
+        if (value == 'register') { formLogin.reset() }
+    }
+
     return (
         <div className="flex w-full max-w-[35vw] flex-col gap-6 justify-center py-32">
-            <Tabs defaultValue="login">
+            <Tabs defaultValue="login" onValueChange={handleTabChange}>
                 <TabsList>
                     <TabsTrigger value="login">Login</TabsTrigger>
                     <TabsTrigger value="register">Register</TabsTrigger>
                 </TabsList>
                 <TabsContent value="login">
-                    {tabsLogin()}
+                    {tabsLogin(formLogin)}
                 </TabsContent>
 
                 <TabsContent value="register">
-                    {tabsRegister()}
+                    {tabsRegister(formRegister)}
                 </TabsContent>
             </Tabs>
-        </div>
+        </div >
     )
 }
-
 
 export default loginPage;
