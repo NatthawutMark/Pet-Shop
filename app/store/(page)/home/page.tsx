@@ -62,7 +62,7 @@ function Home() {
                             เข้าใจแล้วล่ะ
                         </h1>
                         <Input value={idMaster} onChange={(e) => setIdMaster(e.target.value)} placeholder="Please input ID"></Input>
-                        <Button onClick={getMasterOnClick} >Click Count</Button>
+                        <Button variant="btnGreen" onClick={getMasterOnClick} >Click Count</Button>
                         <p>{data?.NAME || ''}</p>
                     </main>
                 </ div>
