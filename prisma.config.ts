@@ -5,7 +5,9 @@ import { defineConfig } from "prisma/config";
 import { env } from 'process';
 
 function getConnectionString() {
-    return `mysql://${env.DB_USER}:${env.DB_PASSWORD}@${env.DB_HOST}:${env.DB_PORT}/${env.DB_NAME}`;
+    console.log(`mysql://${env.DB_USER}:${env.DB_PASSWORD}@${env.DB_HOST}:${env.DB_PORT}/${env.DB_NAME}`);
+    
+    return `mysql://${env.DB_USER}:${env.DB_PASSWORD}@${env.DB_HOST}:${env.DB_PORT}/${env.DB_NAME}?ssl-mode=VERIFY_CA&ssl-ca=~/Downloads/isrgrootx1.pem`;
 }
 
 export default defineConfig({
