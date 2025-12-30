@@ -35,17 +35,17 @@ export async function POST(request: NextRequest) {
                 Username: checkUser.USERNAME,
                 ...checkUser.CUSTOMER
             }
-            const currentUser = await cookies();
-            currentUser.set('user', JSON.stringify({
-                username : res.Username,
-                firstName: res.FIRST_NAME,
-                lastName:res.LAST_NAME,
-                address:res.ADDRESS,
-                tel:res.TEL
-            }),{
-                httpOnly:true,
-                maxAge:  60 * 60 * 24 * 7,
-            });
+            // const currentUser = await cookies();
+            // currentUser.set('user', JSON.stringify({
+            //     username : res.Username,
+            //     firstName: res.FIRST_NAME,
+            //     lastName:res.LAST_NAME,
+            //     address:res.ADDRESS,
+            //     tel:res.TEL
+            // }),{
+            //     httpOnly:true,
+            //     maxAge:  60 * 60 * 24 * 7,
+            // });
 
             return response({
                 results: res,
