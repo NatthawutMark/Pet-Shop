@@ -9,18 +9,6 @@ import { useSidebar } from '@/components/layout/SidebarCustom'; // ต้อง 
 import { count } from "console";
 import { MastStatus } from '@/Services'
 
-const MenuButton = () => {
-    const { toggle, isOpen } = useSidebar();
-
-    return (
-        <button
-            onClick={toggle}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-            <Menu className="w-6 h-6" />
-        </button>
-    );
-};
 
 
 function Home() {
@@ -51,7 +39,7 @@ function Home() {
         <>
             <div className="flex flex-col flex-full w-screen">
                 <div className="flex items-center gap-4 mb-4">
-                    <MenuButton />
+                    
                     <p className="text-sm text-gray-600">
                         <span className="font-medium">ทำค้นหา :</span> แมว
                     </p>
@@ -59,7 +47,7 @@ function Home() {
                 < div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black" >
                     <main className="flex min-h-screen w-full min-w-3xl max-w-dvw flex-col items-center py-4 px-4 bg-white dark:bg-black sm:items-start">
                         <h1 className="text-4xl font-bold text-gray-900 dark:text-white sm:text-5xl">
-                            เข้าใจแล้วล่ะ
+                            
                         </h1>
                         <Input value={idMaster} onChange={(e) => setIdMaster(e.target.value)} placeholder="Please input ID"></Input>
                         <Button variant="btnGreen" onClick={getMasterOnClick} >Click Count</Button>
