@@ -136,7 +136,7 @@ function pageOrders() {
     return (
         <div className='flex flex-col px-5 py-5'>
             <div className='w-64'>
-                <Label className='text-2xl'>คำสั่งซื้อ</Label>
+                <Label className='text-2xl'>ผู้ใช้งาน</Label>
             </div>
             <div className='py-5'>
                 <TableContainer component={Paper}>

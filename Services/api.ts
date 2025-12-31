@@ -22,9 +22,9 @@ class MastStatus {
 
 class User {
 
-    static async login(dataForm: any) {
+    static async loginUser(dataForm: any) {
         try {
-            return await api.post<any>(`/user/login`, dataForm).then((results) => {
+            return await api.post<any>(`/auth/login`, dataForm).then((results) => {
                 return results.data;
             })
         } catch (error) {
@@ -33,9 +33,9 @@ class User {
         }
     }
 
-    static async createUserCus(dataForm: any) {
+    static async registerUser(dataForm: any) {
         try {
-            return await api.post<any>(`/user/register`, dataForm).then((results) => {
+            return await api.post<any>(`/auth/register`, dataForm).then((results) => {
                 return results.data;
             })
         } catch (error) {

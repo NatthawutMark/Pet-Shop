@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
                 data: {
                     USERNAME: username,
                     PASSWORD: password,
+                    IS_ADMIN: false,
                     CREATE_AT: new Date(),
                     CREATE_BY: firstName,
                     UPDATE_AT: new Date(),

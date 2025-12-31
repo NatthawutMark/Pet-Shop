@@ -9,19 +9,20 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import Swal from 'sweetalert2'
 import { useRouter } from "next/navigation";
 import { User } from "@/Services/api";
+
 //#region SchemaInput
 const LoginSchema = z.object({
     username: z.string().min(1, "กรุณากรอก Username").optional(),
-    password: z.string().min(6, "รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร").optional(),
-
+    password: z.string().min(5, "รหัสผ่านต้องมีความยาวอย่างน้อย 5 ตัวอักษร").optional(),
+    isAdmin: z.int32()
 });
 const RegisterSchema = z.object({
     firstName: z.string().min(1, 'กรุณากรอกชื่อ'),
     lastName: z.string().min(1, 'กรุณากรอกนามสกุล'),
     address: z.string().min(1, 'กรุณากรอกที่อยู่'),
     tel: z.string().min(1, 'กรุณากรอกเบอร์โทร'),
-    username: z.string().min(1, "กรุณากรอก Username").optional(),
-    password: z.string().min(6, "รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร"),
+    username: z.string().min(1, "กรุณากรอก Username"),
+    password: z.string().min(5, "รหัสผ่านต้องมีความยาวอย่างน้อย 5 ตัวอักษร"),
     confirmPassword: z.string().min(1, "กรุณากรอก Confirm Password"),
 
 });
@@ -45,7 +46,7 @@ function tabsLogin(formLogin: UseFormReturn<z.infer<typeof LoginSchema>>) {
             }
         });
 
-        await User.login(values).then((res) => {
+        await User.loginUser(values).then((res) => {
             Swal.close();
             if (res && res.status == true) {
 
@@ -57,7 +58,7 @@ function tabsLogin(formLogin: UseFormReturn<z.infer<typeof LoginSchema>>) {
                     showConfirmButton: true,
                     timer: 2000
                 }).then((resPage) => {
-                    router.push('/store/home');
+                    router.push('/admin');
                 });
             }
             else {
@@ -161,6 +162,7 @@ export function loginPage() {
         defaultValues: {
             username: "",
             password: "",
+            isAdmin: 1
         },
     })
     //#endregion

@@ -167,7 +167,7 @@ function pageOrders() {
                         <TableFooter>
                             <TableRow>
                                 <TablePagination
-                                    rowsPerPageOptions={[10, 15/* , 25, { label: 'All', value: -1 } */]}
+                                    rowsPerPageOptions={[10, 15, 25, { label: 'All', value: -1 }]}
                                     colSpan={3}
                                     count={rows.length}
                                     rowsPerPage={rowsPerPage}

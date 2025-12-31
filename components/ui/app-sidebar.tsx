@@ -1,8 +1,11 @@
+'use client'
 import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
 
 import {
+    Label,
     Sidebar,
     SidebarContent,
+    SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
     SidebarGroupLabel,
@@ -10,28 +13,35 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/Meterials"
+//#region Icon
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import StorageIcon from '@mui/icons-material/Storage';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+//#endregion
 
 // Menu items.
 const items = [
     {
         title: "Dashboard",
         url: "/dashboard",
-        icon: Home,
+        icon: DashboardIcon,
     },
     {
         title: "คำสั่งซื้อ",
         url: "/orders",
-        icon: Inbox,
+        icon: AssignmentIcon,
     },
     {
         title: "ข้อมูล",
-        url: "/mastItem",
-        icon: Calendar,
+        url: "/mastData",
+        icon: StorageIcon,
     },
     {
         title: "ข้อมูลผู้ใช้",
-        url: "#",
-        icon: Search,
+        url: "/users",
+        icon: AccountCircleIcon,
     },
     // {
     //     title: "Settings",
@@ -62,6 +72,18 @@ export function AppSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
+            <SidebarFooter className="bg-red-200">
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton asChild>
+                            <a href={`/store`}>
+                                <ExitToAppIcon />
+                                <span>ออกระบบ</span>
+                            </a>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarFooter>
         </Sidebar>
     )
 }
