@@ -28,16 +28,16 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-                <SidebarProvider>
+                
                     <div className="min-h-screen flex flex-col">
                         <Header />
                         <div className="flex">
-                            <Sidebars />
+                            
                             {children}
                         </div>
                         <Footer />
                     </div>
-                </SidebarProvider>
+                
             </body>
         </html>
     );
