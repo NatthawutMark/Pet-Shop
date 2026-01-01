@@ -12,8 +12,8 @@ import { User } from "@/Services/api";
 //#region SchemaInput
 const LoginSchema = z.object({
     username: z.string().min(1, "กรุณากรอก Username").optional(),
-    password: z.string().min(6, "รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร").optional(),
-
+    password: z.string().min(5, "รหัสผ่านต้องมีความยาวอย่างน้อย 5 ตัวอักษร").optional(),
+    isAdmin: z.int32()
 });
 const RegisterSchema = z.object({
     // email: z.string().min(1, "กรุณากรอกอีเมล").email("รูปแบบอีเมลไม่ถูกต้อง"),
@@ -22,7 +22,7 @@ const RegisterSchema = z.object({
     address: z.string().min(1, 'กรุณากรอกที่อยู่'),
     tel: z.string().min(1, 'กรุณากรอกเบอร์โทร'),
     username: z.string().min(1, "กรุณากรอก Username").optional(),
-    password: z.string().min(6, "รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร"),
+    password: z.string().min(5, "รหัสผ่านต้องมีความยาวอย่างน้อย 5 ตัวอักษร"),
     confirmPassword: z.string().min(1, "กรุณากรอก Confirm Password"),
 
 });
@@ -46,7 +46,7 @@ function tabsLogin(formLogin: UseFormReturn<z.infer<typeof LoginSchema>>) {
             }
         });
 
-        await User.login(values).then((res) => {
+        await User.loginUser(values).then((res) => {
             Swal.close();
             if (res && res.status == true) {
 
@@ -174,7 +174,7 @@ function tabsRegister(formRegister: UseFormReturn<z.infer<typeof RegisterSchema>
         Swal.fire({
             icon: 'question',
             title: 'ตรวจสอบความถูกต้อง',
-            text: `กรุณากดตรจสอบความถูกต้องการกด "ยืนยัน"`,
+            text: `กรุณากดตรจสอบความถูกต้องและการกด "ยืนยัน"`,
             confirmButtonText: 'ยืนยัน',
             showCancelButton: true,
             reverseButtons: true
@@ -188,7 +188,7 @@ function tabsRegister(formRegister: UseFormReturn<z.infer<typeof RegisterSchema>
                     }
                 });
 
-                User.createUserCus(value).then((resApi) => {
+                User.registerUser(value).then((resApi) => {
 
                     if (resApi && resApi.status == true) {
                         Swal.fire({
@@ -410,6 +410,7 @@ export function loginPage() {
         defaultValues: {
             username: "",
             password: "",
+            isAdmin: 0
         },
     })
     //#endregion

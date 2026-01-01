@@ -21,7 +21,9 @@ export const metadata: Metadata = {
     description: "Admin",
 };
 
-export default function RootLayout({ children, }: Readonly<{ children: React.ReactNode; }>) {
+export default function RootLayout(
+    { children,items }
+    : Readonly<{ children: React.ReactNode;items:React.ReactNode }>) {
     return (
         <html lang="en">
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
@@ -30,6 +32,7 @@ export default function RootLayout({ children, }: Readonly<{ children: React.Rea
                     <SidebarTrigger/>
                     <main className="w-screen">
                         {children}
+                        {items}
                     </main>
                 </SidebarProvider>
             </body>

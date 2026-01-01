@@ -136,9 +136,9 @@ function pageOrders() {
     return (
         <div className='flex flex-col px-5 py-5'>
             <div className='w-64'>
-                <Label className='text-2xl'>คำสั่งซื้อ</Label>
+                <Label className='text-2xl'>Dashboard</Label>
             </div>
-            <div className='py-5'>
+            {/* <div className='py-5'>
                 <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
                         <TableBody>
@@ -167,7 +167,7 @@ function pageOrders() {
                         <TableFooter>
                             <TableRow>
                                 <TablePagination
-                                    rowsPerPageOptions={[10, 15/* , 25, { label: 'All', value: -1 } */]}
+                                    rowsPerPageOptions={[10, 15, 25, { label: 'All', value: -1 }]}
                                     colSpan={3}
                                     count={rows.length}
                                     rowsPerPage={rowsPerPage}
@@ -188,7 +188,7 @@ function pageOrders() {
                         </TableFooter>
                     </Table>
                 </TableContainer>
-            </div>
+            </div> */}
         </div>
     )
 }

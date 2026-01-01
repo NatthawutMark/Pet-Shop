@@ -18,3 +18,4 @@ export * from './tooltip';
 export * from './form';
 export * from './checkbox';
 export * from './app-sidebar';
+export * from './select';
