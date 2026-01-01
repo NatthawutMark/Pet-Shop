@@ -174,7 +174,7 @@ function tabsRegister(formRegister: UseFormReturn<z.infer<typeof RegisterSchema>
         Swal.fire({
             icon: 'question',
             title: 'ตรวจสอบความถูกต้อง',
-            text: `กรุณากดตรจสอบความถูกต้องการกด "ยืนยัน"`,
+            text: `กรุณากดตรจสอบความถูกต้องและการกด "ยืนยัน"`,
             confirmButtonText: 'ยืนยัน',
             showCancelButton: true,
             reverseButtons: true

@@ -245,7 +245,7 @@ function tabCategories() {
                 <CardHeader>
                     <div className='flex flex-row justify-between '>
                         <Label className='text-2xl'>ข้อมูลหมวดหมู่</Label>
-                        <Button onClick={() => { router.push(`${pathName}/Item`) }}>เพิ่มสินค้า</Button>
+                        <Button onClick={() => { router.push(`${pathName}/categories`) }}>เพิ่มหมวดหมู่</Button>
                         {/* <Button onClick={() => { router.push(`${pathName}/addData?id=123`) }}>แก้ไขสินค้า</Button> */}
                     </div>
                 </CardHeader>

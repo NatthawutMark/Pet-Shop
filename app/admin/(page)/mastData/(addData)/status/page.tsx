@@ -113,7 +113,7 @@ export default function mainPage() {
     return (
         <div className='flex flex-col px-5 py-5'>
             <div className='w-64 flex flex-col'>
-                <Label className='text-4xl'>ข้อมูลสินค้า</Label>
+                <Label className='text-4xl'>ข้อมูลข้อมูลสถานะ</Label>
             </div>
             <div className='flex flex-row py-5 justify-center max-w-svw'>
                 <FormProvider {...formItem}>
