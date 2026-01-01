@@ -1,19 +1,14 @@
 'use client'
 import * as react from 'react'
 import { useState, useEffect } from 'react'
-// import { Label } from "@radix-ui/react-dropdown-menu";
 import { useSearchParams } from 'next/navigation';
 import { Button, Label, Card, CardContent, CardFooter, CardHeader, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from '@/Meterials';
-import { FormProvider, useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MastCategories, MastItem, MastPet, MastStatus } from '@/Services/api';
 import Swal from 'sweetalert2';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-
-const formItemSchema = z.object({
-    cateName: z.string().min(1, 'กรุณาใส่ชื่อสินค้า')
-});
+import DeleteIcon from '@mui/icons-material/Delete';
 
 type FormValues = {
     items: {
@@ -25,8 +20,6 @@ type FormValues = {
 export default function mainPage() {
     const [title, setTitle] = useState('เพิ่มข้อมูล');
     const [id, setId] = useState(null);
-    const [mastPetData, setMastPetData] = useState<[]>([])
-    const [mastCategoriesData, setMastCategoriesData] = useState<[]>([])
 
     const param = useSearchParams()
     const paramId = param.get('id')
@@ -35,22 +28,7 @@ export default function mainPage() {
         if (paramId) {
             setTitle('แก้ไขข้อมูล');
         }
-
-        MastPet.getAll().then((petRes) => {
-            setMastPetData(petRes.results);
-        });
-
-        MastCategories.getAll().then((cateRes) => {
-            setMastCategoriesData(cateRes.results)
-        });
     }, [])
-
-    const formItem = useForm<z.infer<typeof formItemSchema>>({
-        resolver: zodResolver(formItemSchema) as any,
-        defaultValues: {
-            cateName: ''
-        }
-    });
 
     const { register, control, handleSubmit } = useForm<FormValues>({
         defaultValues: {
@@ -63,13 +41,8 @@ export default function mainPage() {
         name: 'items'
     });
 
-    const onSubmit = (data: FormValues) => {
-        console.log('ข้อมูลที่ส่ง:', data);
-        alert('ส่งข้อมูลสำเร็จ! ดูใน console');
-    };
-
-    async function saveItem(values: z.infer<typeof formItemSchema>) {
-        console.log('values : ', values);
+    async function saveData(values: FormValues) {
+        console.log('ข้อมูลที่ส่ง:', values);
         Swal.fire({
             icon: 'question',
             title: 'แจ้งเตือน',
@@ -90,8 +63,7 @@ export default function mainPage() {
                         Swal.isLoading()
                     }
                 });
-
-                MastItem.insertItem(values).then(res => {
+                MastCategories.insertData(values).then((res) => {
                     Swal.close();
                     if (res && res.status == true) {
                         Swal.fire({
@@ -129,7 +101,7 @@ export default function mainPage() {
             </div>
             <div className='flex flex-row py-5 justify-center max-w-svw'>
                 {/* <FormProvider {...formItem}> */}
-                <form className='w-1/2' onSubmit={handleSubmit(onSubmit)}>
+                <form className='w-1/2' onSubmit={handleSubmit(saveData)}>
                     <Card >
                         <CardHeader className='text-3xl'>{title}</CardHeader>
                         <CardContent className="flex flex-col">
@@ -138,7 +110,7 @@ export default function mainPage() {
                                     <input
                                         {...register(`items.${index}.value` as const)}
                                         type="text"
-                                        placeholder="รายละเอียด"
+                                        placeholder="ใส่ข้อมูล"
                                         className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                                     />
 
@@ -148,7 +120,7 @@ export default function mainPage() {
                                             onClick={() => remove(index)}
                                             className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                                         >
-                                            ลบ
+                                            <DeleteIcon />
                                         </button>
                                     )}
 

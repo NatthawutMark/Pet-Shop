@@ -72,7 +72,7 @@ model MAST_CATEGORIES {
 
 model MAST_ITEM {
   ID              Int             @id @default(autoincrement())
-  ITEM_CODE       String          @db.VarChar(15)
+  ITEM_CODE       String          @unique(map: "MAST_ITEM_UNIQUE") @db.VarChar(15)
   ITEM_NAME       String          @db.VarChar(255)
   ITEM_CATE_ID    Int
   ITEM_PET_ID     Int
@@ -84,6 +84,7 @@ model MAST_ITEM {
   UPDATE_AT       DateTime?       @db.DateTime(0)
   UPDATE_BY       String?         @db.VarChar(100)
   INVENTORY       INVENTORY[]
+  ITEM_IMAGE      ITEM_IMAGE[]
   MAST_CATEGORIES MAST_CATEGORIES @relation(fields: [ITEM_CATE_ID], references: [ID], onDelete: NoAction, onUpdate: NoAction, map: "FK_ITEM_CATE_ID")
   MAST_PET        MAST_PET        @relation(fields: [ITEM_PET_ID], references: [ID], onDelete: NoAction, onUpdate: NoAction, map: "FK_ITEM_PET_ID")
   ORDERS_DETAIL   ORDERS_DETAIL[]
@@ -171,4 +172,18 @@ model USER_AUTHEN {
   UPDATE_BY String?    @db.VarChar(100)
   CUSTOMER  CUSTOMER[]
   EMPLOYEE  EMPLOYEE[]
+}
+
+model ITEM_IMAGE {
+  ID        Int       @id @default(autoincrement())
+  ITEM_ID   Int
+  URL       String?   @db.LongText
+  IS_ACTIVE Boolean?  @default(dbgenerated("b'1'")) @db.Bit(1)
+  CREATE_AT DateTime? @default(now()) @db.DateTime(0)
+  CREATE_BY String?   @default("System") @db.VarChar(100)
+  UPDATE_AT DateTime? @db.DateTime(0)
+  UPDATE_BY String?   @db.VarChar(100)
+  MAST_ITEM MAST_ITEM @relation(fields: [ITEM_ID], references: [ID], onDelete: NoAction, onUpdate: NoAction, map: "FK_ITEM_IMAGE_ID")
+
+  @@index([ITEM_ID], map: "FK_ITEM_IMAGE_ID")
 }

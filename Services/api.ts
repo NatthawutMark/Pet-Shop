@@ -70,6 +70,17 @@ class MastCategories {
             throw error;
         }
     };
+
+    static async insertData(data: any) {
+        try {
+            return await api.post<any>(`/mastCategories`, data).then((response) => {
+                return response.data;
+            });
+        } catch (error) {
+            console.error('Error fetching mast status:', error);
+            throw error;
+        }
+    };
 }
 
 class MastItem {
