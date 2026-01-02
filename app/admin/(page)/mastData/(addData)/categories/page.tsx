@@ -1,7 +1,7 @@
 'use client'
 import * as react from 'react'
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button, Label, Card, CardContent, CardFooter, CardHeader, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from '@/Meterials';
 import { useFieldArray, useForm } from "react-hook-form";
 import * as z from "zod";
@@ -18,6 +18,7 @@ type FormValues = {
 
 
 export default function mainPage() {
+    const router = useRouter();
     const [title, setTitle] = useState('เพิ่มข้อมูล');
     const [id, setId] = useState(null);
 
@@ -70,7 +71,10 @@ export default function mainPage() {
                             icon: 'success',
                             title: 'สำเร็จ',
                             text: `บันทึกข้อมูลสำเร็จ`,
-                            confirmButtonText: 'ตกลง'
+                            confirmButtonText: 'ตกลง',
+                            timer: 2000
+                        }).then((res) => {
+                            router.back();
                         });
                     }
                     else {

@@ -2,7 +2,7 @@
 import * as react from 'react'
 import { useState, useEffect } from 'react'
 // import { Label } from "@radix-ui/react-dropdown-menu";
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button, Label, Card, CardContent, CardFooter, CardHeader, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from '@/Meterials';
 import { FormProvider, useForm } from "react-hook-form";
 import * as z from "zod";
@@ -22,6 +22,7 @@ const formItemSchema = z.object({
 });
 
 export default function mainPage() {
+    const router = useRouter();
     const [title, setTitle] = useState('เพิ่มข้อมูล');
     const [id, setId] = useState(null);
     const [mastPetData, setMastPetData] = useState<[]>([])
@@ -86,7 +87,10 @@ export default function mainPage() {
                             icon: 'success',
                             title: 'สำเร็จ',
                             text: `บันทึกข้อมูลสำเร็จ`,
-                            confirmButtonText: 'ตกลง'
+                            confirmButtonText: 'ตกลง',
+                            timer: 2000
+                        }).then((res) => {
+                            router.back();
                         });
                     }
                     else {

@@ -23,8 +23,10 @@ const buttonVariants = cva(
                 //#region custom
                 btnGreen:
                     "bg-green-500 text-white hover:bg-green-600 focus-visible:ring-green-300",
-                custom2:
+                btnYellow:
                     "bg-yellow-500 text-black hover:bg-yellow-600 focus-visible:ring-yellow-300",
+                btnRed:
+                    "bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-300",
                 //#endregion custom
             },
             size: {

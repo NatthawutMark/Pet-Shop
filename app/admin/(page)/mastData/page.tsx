@@ -2,7 +2,6 @@
 import { Button, Card, CardContent, CardHeader, Label, Tabs, TabsContent, TabsList, TabsTrigger } from '@/Meterials'
 import { useState, useEffect, MouseEvent, ChangeEvent } from 'react';
 import { useRouter, usePathname } from "next/navigation";
-
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import Table from '@mui/material/Table';
@@ -19,6 +18,7 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
+import { MastItem } from '@/Services/api';
 
 export const useNavigate = () => {
     const router = useRouter();
@@ -124,9 +124,21 @@ function tabItem() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const { router, pathName } = useNavigate();
+    const [mastItemData, setMastItemData] = useState<any[]>([]);
+    const [mastItemCount, setmastItemCount] = useState();
+
+    useEffect(() => {
+
+        MastItem.getAll().then((res) => {
+            if (res && res.status == true) {
+                setMastItemData(res?.results);
+                setmastItemCount(res?.total);
+            }
+        })
+    }, [])
 
     // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - mastItemData.length) : 0;
 
     const handleChangePage = (
         event: MouseEvent<HTMLButtonElement> | null,
@@ -157,26 +169,49 @@ function tabItem() {
                     <TableContainer component={Paper}>
                         <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
                             <TableHead>
-                                <TableRow>
-                                    <TableCell>ID</TableCell>
-                                    <TableCell align="right">Name</TableCell>
-                                    <TableCell align="right">NO</TableCell>
+                                <TableRow className='bg-gray-400 text-white'>
+                                    <TableCell>รหัสสินค้า</TableCell>
+                                    <TableCell>ชื่อสินค้า</TableCell>
+                                    <TableCell>หมวดหมู่</TableCell>
+                                    <TableCell>ประเภทสัตว์</TableCell>
+                                    <TableCell align='right'>Price</TableCell>
+                                    <TableCell align='center'>Status</TableCell>
+                                    <TableCell className="w-[200px]" align='center'>Action</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {(rowsPerPage > 0
-                                    ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    : rows
-                                ).map((row) => (
-                                    <TableRow key={row.name}>
-                                        <TableCell component="th" scope="row">
-                                            {row.name}
+                                    ? mastItemData?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    : mastItemData
+                                )?.map((row) => (
+                                    <TableRow key={row?.id}>
+                                        <TableCell component="th" scope="row" className='text-'>
+                                            {row.itemCode}
                                         </TableCell>
-                                        <TableCell style={{ width: 160 }} align="right">
-                                            {row.calories}
+                                        <TableCell className='' >
+                                            {row.itemName}
                                         </TableCell>
-                                        <TableCell style={{ width: 160 }} align="right">
-                                            {row.fat}
+                                        <TableCell className='' >
+                                            {row.cateName}
+                                        </TableCell>
+                                        <TableCell className='' >
+                                            {row.petName}
+                                        </TableCell>
+                                        <TableCell align='right'>
+                                            {row.price}.-
+                                        </TableCell>
+                                        <TableCell align='center' >
+                                            {row.isActive ? 'Active' : 'Inactive'}
+                                        </TableCell>
+                                        <TableCell align='center'>
+                                            <div className='flex flex-row'>
+                                                <div className='flex flex-1 justify-center'>
+                                                    <Button variant='btnYellow' className='mx-2'>Edit</Button>
+                                                </div>
+                                                <div className='flex flex-1 justify-center'>
+                                                    <Button variant={!row?.isActive ? 'btnGreen' : 'btnRed'}>{!row?.isActive ? 'Active' : 'Inactive'}</Button>
+                                                </div>
+                                            </div>
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -190,8 +225,8 @@ function tabItem() {
                                 <TableRow>
                                     <TablePagination
                                         rowsPerPageOptions={[10, 15, 25, { label: 'All', value: -1 }]}
-                                        colSpan={3}
-                                        count={rows.length}
+                                        colSpan={5}
+                                        count={mastItemData?.length}
                                         rowsPerPage={rowsPerPage}
                                         page={page}
                                         slotProps={{
@@ -256,8 +291,8 @@ function tabCategories() {
                             <TableHead>
                                 <TableRow>
                                     <TableCell>ID</TableCell>
-                                    <TableCell align="right">Name</TableCell>
-                                    <TableCell align="right">NO</TableCell>
+                                    <TableCell className='items-right justify-end' align='right'>Name</TableCell>
+                                    <TableCell className='items-right justify-end' align='right'>NO</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -269,10 +304,10 @@ function tabCategories() {
                                         <TableCell component="th" scope="row">
                                             {row.name}
                                         </TableCell>
-                                        <TableCell style={{ width: 160 }} align="right">
+                                        <TableCell style={{ width: 160 }} className='items-right justify-end' align='right'>
                                             {row.calories}
                                         </TableCell>
-                                        <TableCell style={{ width: 160 }} align="right">
+                                        <TableCell style={{ width: 160 }} className='items-right justify-end' align='right'>
                                             {row.fat}
                                         </TableCell>
                                     </TableRow>
@@ -342,7 +377,7 @@ function tabPet() {
                 <CardHeader>
                     <div className='flex flex-row justify-between '>
                         <Label className='text-2xl'>ข้อมูลประเภทสัตว์</Label>
-                        <Button onClick={() => { router.push(`${pathName}/Item`) }}>เพิ่มสินค้า</Button>
+                        <Button onClick={() => { router.push(`${pathName}/pet`) }}>เพิ่มข้อมูล</Button>
                         {/* <Button onClick={() => { router.push(`${pathName}/addData?id=123`) }}>แก้ไขสินค้า</Button> */}
                     </div>
                 </CardHeader>
@@ -353,8 +388,8 @@ function tabPet() {
                             <TableHead>
                                 <TableRow>
                                     <TableCell>ID</TableCell>
-                                    <TableCell align="right">Name</TableCell>
-                                    <TableCell align="right">NO</TableCell>
+                                    <TableCell className='items-right justify-end' align='right'>Name</TableCell>
+                                    <TableCell className='items-right justify-end' align='right'>NO</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -366,10 +401,10 @@ function tabPet() {
                                         <TableCell component="th" scope="row">
                                             {row.name}
                                         </TableCell>
-                                        <TableCell style={{ width: 160 }} align="right">
+                                        <TableCell style={{ width: 160 }} className='items-right justify-end' align='right'>
                                             {row.calories}
                                         </TableCell>
-                                        <TableCell style={{ width: 160 }} align="right">
+                                        <TableCell style={{ width: 160 }} className='items-right justify-end' align='right'>
                                             {row.fat}
                                         </TableCell>
                                     </TableRow>
@@ -439,7 +474,7 @@ function tabStatus() {
                 <CardHeader>
                     <div className='flex flex-row justify-between '>
                         <Label className='text-2xl'>ข้อมูลสถานะ</Label>
-                        <Button onClick={() => { router.push(`${pathName}/Item`) }}>เพิ่มสินค้า</Button>
+                        <Button onClick={() => { router.push(`${pathName}/status`) }}>เพิ่มข้อมูล</Button>
                         {/* <Button onClick={() => { router.push(`${pathName}/addData?id=123`) }}>แก้ไขสินค้า</Button> */}
                     </div>
                 </CardHeader>
@@ -450,8 +485,8 @@ function tabStatus() {
                             <TableHead>
                                 <TableRow>
                                     <TableCell>ID</TableCell>
-                                    <TableCell align="right">Name</TableCell>
-                                    <TableCell align="right">NO</TableCell>
+                                    <TableCell className='items-right justify-end' align='right'>Name</TableCell>
+                                    <TableCell className='items-right justify-end' align='right'>NO</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -463,10 +498,10 @@ function tabStatus() {
                                         <TableCell component="th" scope="row">
                                             {row.name}
                                         </TableCell>
-                                        <TableCell style={{ width: 160 }} align="right">
+                                        <TableCell style={{ width: 160 }} className='items-right justify-end' align='right'>
                                             {row.calories}
                                         </TableCell>
-                                        <TableCell style={{ width: 160 }} align="right">
+                                        <TableCell style={{ width: 160 }} className='items-right justify-end' align='right'>
                                             {row.fat}
                                         </TableCell>
                                     </TableRow>
@@ -517,7 +552,7 @@ function pageOrders() {
                     <TabsTrigger className='w-36' value="item">สินค้า</TabsTrigger>
                     <TabsTrigger className='w-36' value="categories">หมวดหมู่</TabsTrigger>
                     <TabsTrigger className='w-36' value="pet">ประเภทสัตว์</TabsTrigger>
-                    <TabsTrigger className='w-36' value="status">สถานะ</TabsTrigger>
+                    {/* <TabsTrigger className='w-36' value="status">สถานะ</TabsTrigger> */}
                 </TabsList>
                 <TabsContent value="item">
                     {tabItem()}
@@ -531,9 +566,9 @@ function pageOrders() {
                     {tabPet()}
                 </TabsContent>
 
-                <TabsContent value="status">
+                {/* <TabsContent value="status">
                     {tabStatus()}
-                </TabsContent>
+                </TabsContent> */}
             </Tabs>
         </div>
     )

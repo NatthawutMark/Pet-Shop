@@ -57,6 +57,17 @@ class MastPet {
             throw error;
         }
     };
+
+    static async insertData(data: any) {
+        try {
+            return await api.post<any>(`/mastPet`, data).then((response) => {
+                return response.data;
+            });
+        } catch (error) {
+            console.error('Error fetching mast status:', error);
+            throw error;
+        }
+    };
 }
 
 class MastCategories {
@@ -84,11 +95,22 @@ class MastCategories {
 }
 
 class MastItem {
+    static async getAll() {
+        try {
+            return await api.get(`/mastItem`).then((res) => {
+                console.log('res', res.data);
+                return res.data
+            });
+
+        }
+        catch (error) {
+            console.log(`Error is : ${error}`)
+        }
+    }
+
     static async insertItem(data: any) {
         try {
             return api.post<any>('/mastItem', data).then((res) => {
-                console.log('check api:', res);
-
                 return res.data;
             })
 

@@ -1,31 +1,34 @@
 'use client'
 import * as react from 'react'
 import { useState, useEffect } from 'react'
-// import { Label } from "@radix-ui/react-dropdown-menu";
 import { useSearchParams } from 'next/navigation';
 import { Button, Label, Card, CardContent, CardFooter, CardHeader, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from '@/Meterials';
-import { FormProvider, useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MastCategories, MastItem, MastPet, MastStatus } from '@/Services/api';
 import Swal from 'sweetalert2';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-const formItemSchema = z.object({
-    itemCode: z.string().min(1, 'กรุณากรอกรหัสสินค้า'),
-    itemName: z.string().min(1, 'กรุณาใส่ชื่อสินค้า'),
-    petType: z.string().min(1, 'กรุณาเลือกประเภทสัตว์'),
-    categories: z.string().min(1, 'กรุณาเลือกหมวดหมู่'),
-    price: z.coerce.number().refine((val) => val >= 0, {
-        message: "กรุณาใส่ราคา"
-    }),
-    description: z.string().nullable()
-});
+type FormValues = {
+    items: {
+        value: string;
+    }[];
+};
+
+export const StatusType = () => {
+    const listType = [
+        {
+            id:1,
+            name:'คำสั่งซื้อ'
+        }
+    ]
+}
+
 
 export default function mainPage() {
     const [title, setTitle] = useState('เพิ่มข้อมูล');
     const [id, setId] = useState(null);
-    const [mastPetData, setMastPetData] = useState<[]>([])
-    const [mastCategoriesData, setMastCategoriesData] = useState<[]>([])
 
     const param = useSearchParams()
     const paramId = param.get('id')
@@ -34,30 +37,21 @@ export default function mainPage() {
         if (paramId) {
             setTitle('แก้ไขข้อมูล');
         }
-
-        MastPet.getAll().then((petRes) => {
-            setMastPetData(petRes.results);
-        });
-
-        MastCategories.getAll().then((cateRes) => {
-            setMastCategoriesData(cateRes.results)
-        });
     }, [])
 
-    const formItem = useForm<z.infer<typeof formItemSchema>>({
-        resolver: zodResolver(formItemSchema) as any,
+    const { register, control, handleSubmit } = useForm<FormValues>({
         defaultValues: {
-            itemCode: '',
-            itemName: '',
-            petType: '',
-            categories: '',
-            price: 0,
-            description: ''
+            items: [{ value: '' }]
         }
     });
 
-    async function saveItem(values: z.infer<typeof formItemSchema>) {
-        console.log('values : ', values);
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: 'items'
+    });
+
+    async function saveData(values: FormValues) {
+        console.log('ข้อมูลที่ส่ง:', values);
         Swal.fire({
             icon: 'question',
             title: 'แจ้งเตือน',
@@ -78,8 +72,7 @@ export default function mainPage() {
                         Swal.isLoading()
                     }
                 });
-
-                MastItem.insertItem(values).then(res => {
+                MastCategories.insertData(values).then((res) => {
                     Swal.close();
                     if (res && res.status == true) {
                         Swal.fire({
@@ -113,155 +106,61 @@ export default function mainPage() {
     return (
         <div className='flex flex-col px-5 py-5'>
             <div className='w-64 flex flex-col'>
-                <Label className='text-4xl'>ข้อมูลข้อมูลสถานะ</Label>
+                <Label className='text-4xl'>หมวดหมู่สินค้า</Label>
             </div>
             <div className='flex flex-row py-5 justify-center max-w-svw'>
-                <FormProvider {...formItem}>
-                    <form className='w-1/2' onSubmit={formItem.handleSubmit(saveItem)}>
-                        <Card >
-                            <CardHeader className='text-3xl'>{title}</CardHeader>
-                            <CardContent className="flex flex-col">
-                                <div className='flex flex-row'>
-                                    <div className='flex flex-1 px-2'>
-                                        <FormField
-                                            control={formItem.control}
-                                            name='itemCode'
-                                            render={({ field }) => (
-                                                <FormItem className='w-full'>
-                                                    <FormLabel>รหัสสินค้า</FormLabel>
-                                                    <FormControl>
-                                                        <Input type='text' placeholder='รหัสสินค้า' {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-                                    <div className='flex flex-1 px-2'>
-                                        <FormField
-                                            control={formItem.control}
-                                            name='itemName'
-                                            render={({ field }) => (
-                                                <FormItem className='w-full'>
-                                                    <FormLabel>ชื่อสินค้า</FormLabel>
-                                                    <FormControl>
-                                                        <Input type='text' placeholder='ชื่อสินค้า' {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-                                </div>
-                                <div className='flex flex-row py-2'>
-                                    <div className='flex flex-1 px-2'>
-                                        <FormField
-                                            control={formItem.control}
-                                            name='petType'
-                                            render={({ field }) => (
-                                                <FormItem className='w-full'>
-                                                    <FormLabel>ประเภทสัตว์</FormLabel>
-                                                    <FormControl>
-                                                        <Select
-                                                            value={field.value}  // ต้องมี
-                                                            onValueChange={field.onChange}  // ต้องมี
+                {/* <FormProvider {...formItem}> */}
+                <form className='w-1/2' onSubmit={handleSubmit(saveData)}>
+                    <Card >
+                        <CardHeader className='text-3xl'>{title}</CardHeader>
+                        <CardContent className="flex flex-col">
+                            <Label>sdawd</Label>
+                            {fields.map((field, index) => (
+                                <div key={field.id} className="flex flex-row gap-2 py-1 items-center">
+                                    <input
+                                        {...register(`items.${index}.value` as const)}
+                                        type="text"
+                                        placeholder="ใส่ข้อมูล"
+                                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    />
 
-                                                        >
-                                                            <SelectTrigger className="min-w-full">
-                                                                <SelectValue placeholder="ประเภทสัตว์" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {
-                                                                    (mastPetData?.length > 0) ?
-                                                                        mastPetData.map((res: any) => (
-                                                                            <SelectItem key={res?.id} value={String(res?.id)}>{res?.name}</SelectItem>
-                                                                        )) : null
-                                                                }
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-                                    <div className='flex flex-1 px-2'>
-                                        <FormField
-                                            control={formItem.control}
-                                            name='categories'
-                                            render={({ field }) => (
-                                                <FormItem className='w-full'>
-                                                    <FormLabel>หมวดหมู่</FormLabel>
-                                                    <FormControl className='w-full'>
-                                                        <Select
-                                                            value={field.value}  // ต้องมี
-                                                            onValueChange={field.onChange}  // ต้องมี
-                                                        >
-                                                            <SelectTrigger className="w-full">
-                                                                <SelectValue placeholder="หมวดหมู่" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {
-                                                                    (mastCategoriesData?.length > 0) ?
-                                                                        mastCategoriesData.map((res: any) => (
-                                                                            <SelectItem key={res?.id} value={String(res?.id)}>{res?.name}</SelectItem>
-                                                                        )) : null
-                                                                }
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
+                                    {fields.length > 1 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => remove(index)}
+                                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                                        >
+                                            <DeleteIcon />
+                                        </button>
+                                    )}
+
+                                    {index === fields.length - 1 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => append({ value: '' })}
+                                            className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors text-xl"
+                                        >
+                                            +
+                                        </button>
+                                    )}
                                 </div>
-                                <div className='flex flex-row py-2'>
-                                    <div className='flex flex-1 px-2'>
-                                        <FormField
-                                            control={formItem.control}
-                                            name='price'
-                                            render={({ field }) => (
-                                                <FormItem className='w-1/2'>
-                                                    <FormLabel>ราคาสินค้า</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder='กรุณาใส่ราคา' type='number' {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-                                </div>
-                                <div className='flex flex-row py-2'>
-                                    <div className='flex flex-1 px-2'>
-                                        <FormField
-                                            control={formItem.control}
-                                            name='description'
-                                            render={({ field }) => (
-                                                <FormItem className='w-full'>
-                                                    <FormLabel>รายละเอียดสินค้า</FormLabel>
-                                                    <FormControl>
-                                                        <Textarea
-                                                            placeholder='รายละเอียดสินค้า'
-                                                            cols={5}
-                                                            {...field} />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-                                </div>
-                            </CardContent>
-                            <CardFooter className='justify-end'>
-                                <Button type='submit' variant='btnGreen'>
-                                    บันทึก
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                    </form>
-                </FormProvider>
+                            ))}
+                        </CardContent>
+                        <CardFooter className='justify-end'>
+                            <Button type='submit' variant='btnGreen'>
+                                บันทึก
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                </form>
+                {/*</FormProvider> */}
+
+                {/* <button
+                    type="submit"
+                    className="px-6 py-2 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 transition-colors"
+                >
+                    บันทึก
+                </button> */}
             </div>
         </div >
     )
